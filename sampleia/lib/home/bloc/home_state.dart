@@ -14,7 +14,7 @@ class RecommendedLoading extends HomeState {
 
 //Success State
 class RecommendedSuccess extends HomeState {
-  final Recommended recommended;
+  final List<RecommendedModel> recommended;
 
   const RecommendedSuccess(this.recommended);
 

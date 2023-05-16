@@ -5,14 +5,13 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:sampleia/home/model/recommended_model.dart';
 
-import '../repository/recommended_repository.dart';
+import '../repository/home_repository.dart';
 
 part 'home_event.dart';
-
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final RecommendedRepository _recommendedRepository;
+  final HomeRepository _recommendedRepository;
 
   HomeBloc(this._recommendedRepository) : super(RecommendedLoading()) {
     on<FetchRecommended>(_fetchRecommended);
@@ -22,8 +21,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       FetchRecommended event, Emitter<HomeState> emit) async {
     try {
       emit(RecommendedLoading());
-      final data = await _recommendedRepository.getRecommended();
-      emit(RecommendedSuccess(data));
+      final recommendedResponse =
+          await _recommendedRepository.fetchRecommended("88840", 1, 1);
+      //
+      List<RecommendedModel> mWidgetData = [];
+      for (final recommended in recommendedResponse.data) {
+        mWidgetData.add(RecommendedModel(
+            charityId: recommended.attributes.charityId,
+            charityName: recommended.attributes.name,
+            city: recommended.attributes.city,
+            province: recommended.attributes.province));
+      }
+      //
+      emit(RecommendedSuccess(mWidgetData));
     } catch (e) {
       emit(const RecommendedError("Exception in loading recommended"));
     }

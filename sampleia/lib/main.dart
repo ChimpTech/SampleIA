@@ -3,5 +3,5 @@ import 'package:sampleia/splash/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(home: SplashScreen()));
+  runApp(const MaterialApp(home: SplashScreen()));
 }

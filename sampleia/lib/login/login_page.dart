@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sampleia/common/storage/storage_item.dart';
 
 import '../common/authentication_manager.dart';
+import '../common/storage/storage_service.dart';
 import '../home/home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,6 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   AuthenticationManager authenticator = AuthenticationManager();
   String versionName = "V-1.0-B-1";
+  final StorageService _storageService = StorageService();
 
   @override
   void initState() {
@@ -137,6 +140,11 @@ class _LoginPageState extends State<LoginPage> {
     await authenticator.login();
     final tokenCredentials = await authenticator.getCredentials();
     if (tokenCredentials.accessToken.isNotEmpty) {
+      _storageService.writeSecureData(
+          StorageItem("access_token", tokenCredentials.accessToken));
+      _storageService.writeSecureData(
+          StorageItem("expired_at", tokenCredentials.expiresAt.toString()));
+
       _moveToHome();
       if (kDebugMode) {
         print('User email: ${tokenCredentials.user.email}');

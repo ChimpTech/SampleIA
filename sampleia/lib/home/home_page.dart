@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sampleia/home/bloc/home_bloc.dart';
-import 'package:sampleia/home/repository/recommended_repository.dart';
+import '../data/repository/home_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: RepositoryProvider(
-        create: (context) => RecommendedRepository(),
+        create: (context) => HomeRepositoryImpl(),
         child: const Home(),
       ),
     );
@@ -24,7 +24,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          HomeBloc(RepositoryProvider.of<RecommendedRepository>(context))
+          HomeBloc(RepositoryProvider.of<HomeRepositoryImpl>(context))
             ..add(FetchRecommended()),
       child: Scaffold(
         appBar: AppBar(
@@ -42,7 +42,7 @@ class Home extends StatelessWidget {
             //Success State
             if (state is RecommendedSuccess) {
               return Center(
-                child: Text(state.recommended.data[0].attributes.name),
+                child: Text(state.recommended[0].charityName),
               );
             }
             //Error State
