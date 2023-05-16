@@ -11,9 +11,9 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final HomeRepository _recommendedRepository;
+  final HomeRepository _homeRepository;
 
-  HomeBloc(this._recommendedRepository) : super(RecommendedLoading()) {
+  HomeBloc(this._homeRepository) : super(RecommendedLoading()) {
     on<FetchRecommended>(_fetchRecommended);
   }
 
@@ -22,7 +22,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       emit(RecommendedLoading());
       final recommendedResponse =
-          await _recommendedRepository.fetchRecommended("88840", 1, 1);
+          await _homeRepository.fetchRecommended("88440", 1, 10);
       //
       List<RecommendedModel> mWidgetData = [];
       for (final recommended in recommendedResponse.data) {

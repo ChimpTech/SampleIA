@@ -9,6 +9,6 @@ class HomeRepositoryImpl extends HomeRepository {
       String userId, int page, int pageSize) async {
     final response =
         await RecommendedAPI.fetchRecommended(userId, page, pageSize).request();
-    return Recommended.fromJson(response);
+    return recommendedFromJson(response);
   }
 }

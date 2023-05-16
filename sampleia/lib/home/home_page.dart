@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sampleia/home/bloc/home_bloc.dart';
+
 import '../data/repository/home_repository.dart';
 
 class HomePage extends StatelessWidget {
@@ -42,7 +43,20 @@ class Home extends StatelessWidget {
             //Success State
             if (state is RecommendedSuccess) {
               return Center(
-                child: Text(state.recommended[0].charityName),
+                child: ListView.builder(
+                    itemCount: state.recommended.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: ListTile(
+                            leading: const Icon(Icons.chair_rounded),
+                            trailing: Text(
+                              state.recommended[index].province,
+                              style: const TextStyle(
+                                  color: Colors.green, fontSize: 15),
+                            ),
+                            title: Text(state.recommended[index].charityName)),
+                      );
+                    }),
               );
             }
             //Error State
