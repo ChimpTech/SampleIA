@@ -3,7 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:sampleia/home/home_page.dart';
 import 'package:sampleia/login/login_page.dart';
 
-import '../common/authentication_manager.dart';
+import '../common/authentication/authentication_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen>
   void checkTheLoginStatus(BuildContext context) async {
     await Future.delayed(const Duration(milliseconds: 3000), () {});
     final isLoggedIn = await authenticator.hasValidCredentials();
-    goToHomeScreen(isLoggedIn,context);
+    goToHomeScreen(isLoggedIn, context);
   }
 
   @override
@@ -96,10 +96,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   void goToHomeScreen(bool isLoggedIn, BuildContext context) {
     if (isLoggedIn) {
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
     } else {
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const LoginPage()));
     }
   }

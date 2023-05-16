@@ -1,43 +1,46 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:http/http.dart' as http;
-
+import 'package:http/http.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 import 'api_request_representable.dart';
+import 'header_interceptor.dart';
+import 'log_interceptor.dart';
 
 class APIProvider {
   static final _singleton = APIProvider();
 
   static APIProvider get instance => _singleton;
 
-  Future request(APIRequestRepresentable data) async {
+  Future request(APIRequestRepresentable requestData) async {
     try {
-      if (data.method == HTTPMethod.get) {
-        final url = Uri.https(data.endpoint, data.path, data.query);
-        final response = await http
-            .get(url, headers: {HttpHeaders.authorizationHeader: data.headers});
+      final http = InterceptedHttp.build(
+          interceptors: [LogInterceptor(), HeaderInterceptor()]);
+
+      final url = Uri.parse("${requestData.baseUrl}${requestData.path}");
+
+      if (requestData.method == HTTPMethod.get) {
+        final response = await http.get(url, params: requestData.query);
         return _returnResponse(response);
-      } else if (data.method == HTTPMethod.post) {
-        final url = Uri.https(data.url, data.path, data.query);
+      } else if (requestData.method == HTTPMethod.post) {
         final response = await http.post(url,
-            headers: {HttpHeaders.authorizationHeader: data.headers},
-            body: data.body);
+            params: requestData.query, body: requestData.body);
         return _returnResponse(response);
       }
     } on TimeoutException catch (_) {
-      throw TimeOutException(null);
+      throw TimeOutException("Request Timeout");
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }
   }
 
-  dynamic _returnResponse(http.Response response) {
+  dynamic _returnResponse(Response response) {
     switch (response.statusCode) {
       case 200:
         return response.body;
       case 400:
         throw BadRequestException(response.body.toString());
       case 401:
+        throw UnauthorisedException(response.body.toString());
       case 403:
         throw UnauthorisedException(response.body.toString());
       case 404:
@@ -52,19 +55,21 @@ class APIProvider {
 }
 
 class AppException implements Exception {
-  final code;
-  final message;
-  final details;
+  final String code;
+  final String message;
+  final String details;
 
-  AppException({this.code, this.message, this.details});
+  AppException(
+      {required this.code, required this.message, required this.details});
 
+  @override
   String toString() {
     return "[$code]: $message \n $details";
   }
 }
 
 class FetchDataException extends AppException {
-  FetchDataException(String? details)
+  FetchDataException(String details)
       : super(
           code: "fetch-data",
           message: "Error During Communication",
@@ -73,7 +78,7 @@ class FetchDataException extends AppException {
 }
 
 class BadRequestException extends AppException {
-  BadRequestException(String? details)
+  BadRequestException(String details)
       : super(
           code: "invalid-request",
           message: "Invalid Request",
@@ -82,7 +87,7 @@ class BadRequestException extends AppException {
 }
 
 class UnauthorisedException extends AppException {
-  UnauthorisedException(String? details)
+  UnauthorisedException(String details)
       : super(
           code: "unauthorised",
           message: "Unauthorised",
@@ -91,7 +96,7 @@ class UnauthorisedException extends AppException {
 }
 
 class InvalidInputException extends AppException {
-  InvalidInputException(String? details)
+  InvalidInputException(String details)
       : super(
           code: "invalid-input",
           message: "Invalid Input",
@@ -100,7 +105,7 @@ class InvalidInputException extends AppException {
 }
 
 class AuthenticationException extends AppException {
-  AuthenticationException(String? details)
+  AuthenticationException(String details)
       : super(
           code: "authentication-failed",
           message: "Authentication Failed",
@@ -109,7 +114,7 @@ class AuthenticationException extends AppException {
 }
 
 class TimeOutException extends AppException {
-  TimeOutException(String? details)
+  TimeOutException(String details)
       : super(
           code: "request-timeout",
           message: "Request TimeOut",

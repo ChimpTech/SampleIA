@@ -1,7 +1,7 @@
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/foundation.dart';
 
-import 'constants.dart';
+import '../constants.dart';
 
 class AuthenticationManager {
   static final AuthenticationManager _singleton =

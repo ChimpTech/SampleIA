@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sampleia/common/storage/storage_item.dart';
 
-import '../common/authentication_manager.dart';
+import '../common/authentication/authentication_manager.dart';
 import '../common/storage/storage_service.dart';
 import '../home/home_page.dart';
 
@@ -167,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _moveToHome() {
-    Navigator.push(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => HomePage()));
   }
 }

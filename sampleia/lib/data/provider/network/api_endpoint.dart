@@ -1,3 +1,3 @@
 class APIEndpoint {
-  static String get baseUrl => "api.qa.charitableimpact.com";
+  static String get baseUrl => "https://api.qa.charitableimpact.com";
 }
